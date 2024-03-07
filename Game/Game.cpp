@@ -4,10 +4,14 @@
 #include "framework.h"
 #include "Game.h"
 #include "../EngineLib/Initdx.h"
+#include "../EngineLib/Time.h"
 
 #define MAX_LOADSTRING 100
 
 std::wstring mMainWndCaption = L"My App";
+
+thisApp myApp;
+
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle
 WCHAR szTitle[MAX_LOADSTRING];                  // Texte de la barre de titre
@@ -28,7 +32,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Placez le code ici.
-    thisApp myApp;
+    
 
     // Initialise les chaînes globales
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -55,6 +59,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             DispatchMessage(&msg);    
         }
         myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
+        myApp.thisTime.Update();
     }
 
     return (int) msg.wParam;
@@ -102,7 +107,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Stocke le handle d'instance dans la variable globale
 
-   HWND hWnd = CreateWindowW(szWindowClass, mMainWndCaption.c_str(), WS_OVERLAPPEDWINDOW,
+   HWND hWnd = CreateWindowW(szWindowClass, mMainWndCaption.c_str() , WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
@@ -110,6 +115,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
+   myApp.thisTime.Start();
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 

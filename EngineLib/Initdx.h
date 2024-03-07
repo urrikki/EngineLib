@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Time.h"
+#include "synchapi.h"
 
 class thisApp
 {
@@ -19,6 +20,8 @@ public :
 	void CalculateFrame(HWND mainWin, wstring mMainWndCaption);
 	int mClientWidth = 800;
 	int mClientHeight = 600;
+
+	Time thisTime;
 
 private :
 
@@ -49,6 +52,4 @@ private :
 	int mCurrentFence = 0;
 	ID3D12DescriptorHeap* mRtvHeap;
 	ID3D12DescriptorHeap* mDsvHeap;
-
-	Time thisTime;
 };

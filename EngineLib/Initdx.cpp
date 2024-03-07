@@ -108,7 +108,7 @@ void thisApp::FlushCommandQueue()
 
 	if (mFence->GetCompletedValue() < mCurrentFence)
 	{
-		HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+		HANDLE eventHandle = CreateEventEx(nullptr, NULL, false, EVENT_ALL_ACCESS);
 		HRESULT hrEventOnCompletion(mFence->SetEventOnCompletion(mCurrentFence, eventHandle));
 		assert(SUCCEEDED(hrEventOnCompletion));
 		
