@@ -18,10 +18,11 @@ public :
 	void FlushCommandQueue();
 	void CreateRtvAndDsvDescriptorHeaps();
 	void CalculateFrame(HWND mainWin, wstring mMainWndCaption);
-	int mClientWidth = 800;
-	int mClientHeight = 600;
+	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView();
+	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView();
 
-	Time thisTime;
+	void Draw(Time* gameTime);
+	void Update(Time* gameTime);
 
 private :
 
@@ -29,9 +30,9 @@ private :
 	ID3D12Device* md3dDevice;
 	ID3D12Fence* mFence;
 
-	int mRtvDescriptorSize = 0;
-	int mDsvDescriptorSize = 0;
-	int mCbvSrvUavDescriptorSize = 0;
+	UINT mRtvDescriptorSize = 0;
+	UINT mDsvDescriptorSize = 0;
+	UINT mCbvSrvUavDescriptorSize = 0;
 
 	int m4xMsaaQuality = 0;
 	DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -52,4 +53,18 @@ private :
 	int mCurrentFence = 0;
 	ID3D12DescriptorHeap* mRtvHeap;
 	ID3D12DescriptorHeap* mDsvHeap;
+
+	D3D12_VIEWPORT vpScreenViewport;
+	D3D12_RECT rScissorRect;
+
+public :
+
+	ID3D12Resource* CurrentBackBuffer();
+	ID3D12Resource* tSwapChainBuffer[SwapChainBufferCount];
+	int iCurrBackBuffer = 0;
+
+	int iClientWidth = 800;
+	int iClientHeight = 600;
+
+	Time thisTime;
 };

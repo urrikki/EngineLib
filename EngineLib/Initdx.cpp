@@ -1,9 +1,6 @@
 #include "pch.h"
 #include "Initdx.h"
 
-
-using namespace std;
-
 thisApp::thisApp(){}
 
 thisApp::~thisApp() {}
@@ -20,9 +17,11 @@ void thisApp::Initialize() {
 
 	createDevice();
 	createFence();
+
 	mRtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	mDsvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
 	createMSAAQuality();
 	CommandSystem();
 
@@ -78,8 +77,8 @@ void thisApp::CreateSwapChain() {
 	//&mSwapChain->Reset();
 
 	DXGI_SWAP_CHAIN_DESC sd;
-	sd.BufferDesc.Width = mClientWidth;
-	sd.BufferDesc.Height = mClientHeight;
+	sd.BufferDesc.Width = iClientWidth;
+	sd.BufferDesc.Height = iClientHeight;
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferDesc.Format = mBackBufferFormat;
@@ -164,7 +163,67 @@ void thisApp::CalculateFrame(HWND mainWin , wstring mMainWndCaption)
 
 //Front and Back buffer
 
+ID3D12Resource* thisApp::CurrentBackBuffer() {
+	return tSwapChainBuffer[iCurrBackBuffer];
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE thisApp::CurrentBackBufferView() {
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE(mRtvHeap->GetCPUDescriptorHandleForHeapStart(), iCurrBackBuffer, mRtvDescriptorSize);
+}
+
 //Depth Buffer
+
+D3D12_CPU_DESCRIPTOR_HANDLE thisApp::DepthStencilView() {
+	return mDsvHeap->GetCPUDescriptorHandleForHeapStart();
+}
 
 //Constant Buffer view (avec srv)
 
+void thisApp::Draw(Time* gameTime) {
+	HRESULT hrAllocReset(mDirectCmdListAlloc->Reset());
+	assert(SUCCEEDED(hrAllocReset));
+
+	HRESULT hrCommandListReset(mCommandList->Reset(mDirectCmdListAlloc, nullptr));
+	assert(SUCCEEDED(hrAllocReset));
+
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+
+	mCommandList->ResourceBarrier(1, &barrier);
+
+	mCommandList->RSSetViewports(1, &vpScreenViewport);
+	mCommandList->RSSetScissorRects(1, &rScissorRect);
+
+	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::Magenta, 0, nullptr);
+	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE descCbv = CurrentBackBufferView();
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvTarget = DepthStencilView();
+	mCommandList->OMSetRenderTargets(1, &descCbv, true, &dsvTarget);
+
+	CD3DX12_RESOURCE_BARRIER barrierTwo = CD3DX12_RESOURCE_BARRIER::Transition(
+		CurrentBackBuffer(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PRESENT);
+
+	mCommandList->ResourceBarrier(1, &barrierTwo);
+
+	HRESULT hrCommandClose(mCommandList->Close());
+	assert(SUCCEEDED(hrCommandClose));
+
+	ID3D12CommandList* cmdsLists[] = { mCommandList };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+	HRESULT hrSwapChainPresent(mSwapChain->Present(0, 0));
+	assert(SUCCEEDED(hrSwapChainPresent));
+	iCurrBackBuffer = (iCurrBackBuffer + 1) % SwapChainBufferCount;
+
+	FlushCommandQueue();
+}
+
+void thisApp::Update(Time* gameTime) {
+	thisTime.Update();
+}

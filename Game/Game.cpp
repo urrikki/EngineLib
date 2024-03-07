@@ -59,7 +59,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             DispatchMessage(&msg);    
         }
         myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
-        myApp.thisTime.Update();
+        myApp.Update(&myApp.thisTime);
+        myApp.Draw(&myApp.thisTime);
     }
 
     return (int) msg.wParam;
