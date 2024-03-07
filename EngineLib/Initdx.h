@@ -1,10 +1,11 @@
 #pragma once
 #include "pch.h"
 #include "Time.h"
+#include "synchapi.h"
 
 class thisApp
 {
-public :
+public:
 
 	thisApp();
 	virtual ~thisApp();
@@ -20,7 +21,9 @@ public :
 	int mClientWidth = 800;
 	int mClientHeight = 600;
 
-private :
+	Time thisTime;
+
+private:
 
 	IDXGIFactory4* mdxgiFactory;
 	ID3D12Device* md3dDevice;
@@ -49,6 +52,4 @@ private :
 	int mCurrentFence = 0;
 	ID3D12DescriptorHeap* mRtvHeap;
 	ID3D12DescriptorHeap* mDsvHeap;
-
-	Time thisTime;
 };

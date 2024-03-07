@@ -4,12 +4,12 @@
 
 using namespace std;
 
-thisApp::thisApp(){}
+thisApp::thisApp() {}
 
 thisApp::~thisApp() {}
 
 void thisApp::Initialize() {
-	#if defined(DEBUG) || defined(_DEBUG) 
+#if defined(DEBUG) || defined(_DEBUG) 
 	{
 		ID3D12Debug* debugController;
 		HRESULT hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
@@ -18,13 +18,13 @@ void thisApp::Initialize() {
 	}
 #endif
 
-	createDevice();
-	createFence();
-	mRtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	mDsvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-	mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	createMSAAQuality();
-	CommandSystem();
+createDevice();
+createFence();
+mRtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+mDsvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+createMSAAQuality();
+CommandSystem();
 
 }
 
@@ -39,7 +39,7 @@ void thisApp::createDevice() {
 }
 
 void thisApp::createFence() {
-	HRESULT hrFence = (md3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&mFence)));
+	HRESULT hrFence = (md3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
 	assert(SUCCEEDED(hrFence));
 }
 
@@ -66,9 +66,9 @@ void thisApp::CommandSystem()
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	HRESULT hrCommandQueue(md3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
 	assert(SUCCEEDED(hrCommandQueue));
-	HRESULT hrCommandAllocator(md3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,IID_PPV_ARGS(&mDirectCmdListAlloc)));
+	HRESULT hrCommandAllocator(md3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mDirectCmdListAlloc)));
 	assert(SUCCEEDED(hrCommandAllocator));
-	HRESULT hrCommandList(md3dDevice->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT,mDirectCmdListAlloc, nullptr,IID_PPV_ARGS(&mCommandList)));
+	HRESULT hrCommandList(md3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mDirectCmdListAlloc, nullptr, IID_PPV_ARGS(&mCommandList)));
 	assert(SUCCEEDED(hrCommandList));
 	mCommandList->Close();
 }
@@ -94,7 +94,7 @@ void thisApp::CreateSwapChain() {
 	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	HRESULT hrSwapChain(mdxgiFactory->CreateSwapChain(mCommandQueue,&sd,&mSwapChain));
+	HRESULT hrSwapChain(mdxgiFactory->CreateSwapChain(mCommandQueue, &sd, &mSwapChain));
 	assert(SUCCEEDED(hrSwapChain));
 }
 
@@ -108,10 +108,10 @@ void thisApp::FlushCommandQueue()
 
 	if (mFence->GetCompletedValue() < mCurrentFence)
 	{
-		HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+		HANDLE eventHandle = CreateEventEx(nullptr, NULL, false, EVENT_ALL_ACCESS);
 		HRESULT hrEventOnCompletion(mFence->SetEventOnCompletion(mCurrentFence, eventHandle));
 		assert(SUCCEEDED(hrEventOnCompletion));
-		
+
 		WaitForSingleObject(eventHandle, INFINITE);
 		CloseHandle(eventHandle);
 	}
@@ -136,16 +136,17 @@ void thisApp::CreateRtvAndDsvDescriptorHeaps()
 	assert(SUCCEEDED(hrDescdsv));
 }
 
-void thisApp::CalculateFrame(HWND mainWin , wstring mMainWndCaption)
+float fTimeElapsed = 0.0f;
+
+void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption)
 {
 	int iFrameCnt = 0;
-	float fTimeElapsed = 0.0f;
 
 	iFrameCnt++;
 
 	if ((thisTime.GetTotalTime() - fTimeElapsed) >= 1.0f)
 	{
-		float fFps = iFrameCnt; 
+		float fFps = iFrameCnt;
 		float mspf = 1000.0f / fFps;
 
 		wstring fpsStr = to_wstring(fFps);
@@ -167,4 +168,3 @@ void thisApp::CalculateFrame(HWND mainWin , wstring mMainWndCaption)
 //Depth Buffer
 
 //Constant Buffer view (avec srv)
-
