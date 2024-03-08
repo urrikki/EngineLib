@@ -29,6 +29,8 @@ mhMainWnd = hWnd;
 	CommandSystem();
 	CreateSwapChain();
 	CreateRtvAndDsvDescriptorHeaps();
+
+	thisTime.Start();
 }
 
 void thisApp::OnResize()
@@ -221,30 +223,21 @@ void thisApp::CreateRtvAndDsvDescriptorHeaps()
 	assert(SUCCEEDED(hrDescdsv));
 }
 
-void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption)
-{
-	int iFrameCnt = 0;
-	float fTimeElapsed = 0.0f;
+void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption) {
 
-	iFrameCnt++;
+	thisTime.Update();
 
-	if ((thisTime.GetTotalTime() - fTimeElapsed) >= 1.0f)
-	{
-		float fFps = iFrameCnt;
-		float mspf = 1000.0f / fFps;
+	float fFps = thisTime.GetFPS();
+	float mspf = 1000.0f / fFps;
 
-		wstring fpsStr = to_wstring(fFps);
-		wstring mspfStr = to_wstring(mspf);
+	wstring fpsStr = to_wstring(fFps);
+	wstring mspfStr = to_wstring(mspf);
 
-		wstring windowText = mMainWndCaption +
-			L"    fps: " + fpsStr +
-			L"   mspf: " + mspfStr;
+	wstring windowText = mMainWndCaption +
+		L"    fps: " + fpsStr +
+		L"   mspf: " + mspfStr;
 
-		SetWindowText(mainWin, windowText.c_str());
-
-		iFrameCnt = 0;
-		fTimeElapsed += 1.0f;
-	}
+	SetWindowText(mainWin, windowText.c_str());
 }
 
 //Front and Back buffer
@@ -291,6 +284,14 @@ void thisApp::Draw(Time* gameTime) {
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvTarget = DepthStencilView();
 	mCommandList->OMSetRenderTargets(1, &descCbv, true, &dsvTarget);
 
+
+	//// DRAW START
+
+
+
+	//// DRAW END
+
+
 	CD3DX12_RESOURCE_BARRIER barrierTwo = CD3DX12_RESOURCE_BARRIER::Transition(
 		CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
@@ -312,5 +313,5 @@ void thisApp::Draw(Time* gameTime) {
 }
 
 void thisApp::Update(Time* gameTime) {
-	thisTime.Update();
+	//thisTime.Update();
 }

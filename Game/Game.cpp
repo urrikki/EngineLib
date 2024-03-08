@@ -63,6 +63,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);    
         }
+
         myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
         myApp.Update(&myApp.thisTime);
         myApp.Draw(&myApp.thisTime);
@@ -121,7 +122,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-   myApp.thisTime.Start();
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
