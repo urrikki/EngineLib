@@ -3,8 +3,10 @@
 
 #include "framework.h"
 #include "Game.h"
-#include "../EngineLib/Initdx.h"
+//#include "../EngineLib/Initdx.h"
 #include "../EngineLib/Time.h"
+
+#include "initdx.h"
 
 #define MAX_LOADSTRING 100
 
