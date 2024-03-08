@@ -25,8 +25,6 @@ public :
 	void Draw(Time* gameTime);
 	void Update(Time* gameTime);
 
-private :
-
 	IDXGIFactory4* mdxgiFactory;
 	ID3D12Device* md3dDevice;
 	ID3D12Fence* mFence;
