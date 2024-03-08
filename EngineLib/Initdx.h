@@ -5,7 +5,7 @@
 
 class thisApp
 {
-public :
+public:
 
 	thisApp();
 	virtual ~thisApp();
@@ -25,7 +25,9 @@ public :
 	void Draw(Time* gameTime);
 	void Update(Time* gameTime);
 
-private :
+	Time thisTime;
+
+private:
 
 	IDXGIFactory4* mdxgiFactory;
 	ID3D12Device* md3dDevice;

@@ -4,31 +4,28 @@
 #include "pch.h"
 #include "timeapi.h"
 
-class Time
-{
+class Time {
 public:
     Time();
-    virtual ~Time();
+    ~Time();
 
     void Start();
     void Pause();
     void Resume();
-    bool Update();
-
+    void Update();
     float GetElapsedTime();
     float GetTotalTime();
-    //ouais
+    float GetFPS();
 
 private:
-    float fDeltaTime;
-    float fTotalTime;
     DWORD dwStart;
     DWORD dwPrevious;
-    DWORD dwCountTime;
-
-    bool bIsPaused;
-
-    DWORD dwIsPaused;
     DWORD dwPauseStart;
     DWORD dwPausedTime;
+    float fTotalTime;
+    float fDeltaTime;
+    bool bIsPaused;
+    int iFrameCount;
+    float fFPSTime;
+    float fFPS;
 };

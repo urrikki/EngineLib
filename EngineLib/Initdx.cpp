@@ -18,18 +18,16 @@ mhMainWnd = hWnd;
 	}
 #endif
 
-	createDevice();
-	createFence();
 
-	mRtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	mDsvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-	mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+createDevice();
+createFence();
+mRtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+mDsvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+createMSAAQuality();
+CommandSystem();
 
-	createMSAAQuality();
-	CommandSystem();
-	CreateSwapChain();
-	CreateRtvAndDsvDescriptorHeaps();
-}
+mTime.Start();
 
 void thisApp::OnResize()
 {
@@ -221,31 +219,26 @@ void thisApp::CreateRtvAndDsvDescriptorHeaps()
 	assert(SUCCEEDED(hrDescdsv));
 }
 
-void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption)
-{
-	int iFrameCnt = 0;
-	float fTimeElapsed = 0.0f;
+float fTimeElapsed = 0.0f;
 
-	iFrameCnt++;
+void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption, Time& thisTime) {
 
-	if ((thisTime.GetTotalTime() - fTimeElapsed) >= 1.0f)
-	{
-		float fFps = iFrameCnt;
-		float mspf = 1000.0f / fFps;
+	thisTime.Update();
 
-		wstring fpsStr = to_wstring(fFps);
-		wstring mspfStr = to_wstring(mspf);
+	float fFps = thisTime.GetFPS();
+	float mspf = 1000.0f / fFps;
 
-		wstring windowText = mMainWndCaption +
-			L"    fps: " + fpsStr +
-			L"   mspf: " + mspfStr;
+	wstring fpsStr = to_wstring(fFps);
+	wstring mspfStr = to_wstring(mspf);
 
-		SetWindowText(mainWin, windowText.c_str());
+	wstring windowText = mMainWndCaption +
+		L"    fps: " + fpsStr +
+		L"   mspf: " + mspfStr;
 
-		iFrameCnt = 0;
-		fTimeElapsed += 1.0f;
-	}
+	SetWindowText(mainWin, windowText.c_str());
 }
+
+
 
 //Front and Back buffer
 
