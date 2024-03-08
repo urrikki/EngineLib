@@ -9,7 +9,7 @@ public :
 
 	thisApp();
 	virtual ~thisApp();
-	void Initialize();
+	void Initialize(HWND hWnd);
 	void createDevice();
 	void createFence();
 	void createMSAAQuality();
@@ -18,6 +18,7 @@ public :
 	void FlushCommandQueue();
 	void CreateRtvAndDsvDescriptorHeaps();
 	void CalculateFrame(HWND mainWin, wstring mMainWndCaption);
+	void OnResize();
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView();
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView();
 
@@ -48,7 +49,7 @@ private :
 	//const car on veux juste swap entre les deux 
 	//static 
 	static const int SwapChainBufferCount = 2;
-	HWND  mhMainWnd = nullptr;
+	HWND  mhMainWnd = NULL;
 
 	int mCurrentFence = 0;
 	ID3D12DescriptorHeap* mRtvHeap;
@@ -57,10 +58,14 @@ private :
 	D3D12_VIEWPORT vpScreenViewport;
 	D3D12_RECT rScissorRect;
 
+	DXGI_FORMAT formatDepthStencil = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	D3D12_VIEWPORT vpScreen;
+
 public :
 
 	ID3D12Resource* CurrentBackBuffer();
 	ID3D12Resource* tSwapChainBuffer[SwapChainBufferCount];
+	ID3D12Resource* tDepthStencilBuffer;
 	int iCurrBackBuffer = 0;
 
 	int iClientWidth = 800;

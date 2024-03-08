@@ -3,16 +3,17 @@
 
 #include "framework.h"
 #include "Game.h"
-//#include "../EngineLib/Initdx.h"
+#include "../EngineLib/Initdx.h"
 #include "../EngineLib/Time.h"
 
-#include "initdx.h"
+//#include "initdx.h"
 
 #define MAX_LOADSTRING 100
 
 std::wstring mMainWndCaption = L"My App";
 
 thisApp myApp;
+HWND hWnd;
 
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle
@@ -40,13 +41,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_GAME, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
-    myApp.Initialize();
 
     // Effectue l'initialisation de l'application :
     if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
     }
+
+    myApp.Initialize(hWnd);
+    myApp.OnResize();
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME));
 
@@ -110,7 +113,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Stocke le handle d'instance dans la variable globale
 
-   HWND hWnd = CreateWindowW(szWindowClass, mMainWndCaption.c_str() , WS_OVERLAPPEDWINDOW,
+   hWnd = CreateWindowW(szWindowClass, mMainWndCaption.c_str() , WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)

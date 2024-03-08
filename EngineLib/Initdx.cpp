@@ -2,12 +2,14 @@
 #include "Initdx.h"
 #include <iostream>
 
-thisApp::thisApp(){}
+thisApp::thisApp() {}
 
 thisApp::~thisApp() {}
 
-void thisApp::Initialize() {
-	#if defined(DEBUG) || defined(_DEBUG) 
+void thisApp::Initialize(HWND hWnd) {
+
+mhMainWnd = hWnd;
+#if defined(DEBUG) || defined(_DEBUG) 
 	{
 		ID3D12Debug* debugController;
 		HRESULT hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
@@ -25,7 +27,87 @@ void thisApp::Initialize() {
 
 	createMSAAQuality();
 	CommandSystem();
+	CreateSwapChain();
+	CreateRtvAndDsvDescriptorHeaps();
+}
 
+void thisApp::OnResize()
+{
+	//assert(md3dDevice);
+	//assert(mSwapChain);
+	//assert(mDirectCmdListAlloc);
+
+	FlushCommandQueue();
+
+	HRESULT hrmCommandLReset = mCommandList->Reset(mDirectCmdListAlloc, nullptr);
+	assert(SUCCEEDED(hrmCommandLReset));
+
+	//for (int i = 0; i < SwapChainBufferCount; ++i)
+		//tSwapChainBuffer[i]->Release();
+	//tDepthStencilBuffer->Release();
+
+	
+	HRESULT hrResizeSC = (mSwapChain->ResizeBuffers(SwapChainBufferCount,iClientWidth, iClientHeight,mBackBufferFormat,DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
+	assert(SUCCEEDED(hrResizeSC));
+
+	iCurrBackBuffer = 0;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
+	for (UINT i = 0; i < SwapChainBufferCount; i++)
+	{
+		HRESULT hrGetBuffer = (mSwapChain->GetBuffer(i, IID_PPV_ARGS(&tSwapChainBuffer[i])));
+		assert(SUCCEEDED(hrGetBuffer));
+		md3dDevice->CreateRenderTargetView(tSwapChainBuffer[i], nullptr, rtvHeapHandle);
+		rtvHeapHandle.Offset(1, mRtvDescriptorSize);
+	}
+
+	D3D12_RESOURCE_DESC depthStencilDesc;
+	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	depthStencilDesc.Alignment = 0;
+	depthStencilDesc.Width = iClientWidth;
+	depthStencilDesc.Height = iClientHeight;
+	depthStencilDesc.DepthOrArraySize = 1;
+	depthStencilDesc.MipLevels = 1;
+
+	depthStencilDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+
+	depthStencilDesc.SampleDesc.Count = m4xMsaaState ? 4 : 1;
+	depthStencilDesc.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
+	depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+	D3D12_CLEAR_VALUE optClear;
+	optClear.Format = formatDepthStencil;
+	optClear.DepthStencil.Depth = 1.0f;
+	optClear.DepthStencil.Stencil = 0;
+	CD3DX12_HEAP_PROPERTIES properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	HRESULT hwCreateResource(md3dDevice->CreateCommittedResource(&properties,D3D12_HEAP_FLAG_NONE,&depthStencilDesc,D3D12_RESOURCE_STATE_COMMON,&optClear,IID_PPV_ARGS(&tDepthStencilBuffer)));
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Format = formatDepthStencil;
+	dsvDesc.Texture2D.MipSlice = 0;
+	md3dDevice->CreateDepthStencilView(tDepthStencilBuffer, &dsvDesc, DepthStencilView());
+
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(tDepthStencilBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	mCommandList->ResourceBarrier(1, &barrier);
+
+	HRESULT hrClose = (mCommandList->Close());
+	assert(SUCCEEDED(hrClose));
+	ID3D12CommandList* cmdsLists[] = { mCommandList };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+	FlushCommandQueue();
+
+	vpScreen.TopLeftX = 0;
+	vpScreen.TopLeftY = 0;
+	vpScreen.Width = static_cast<float>(iClientWidth);
+	vpScreen.Height = static_cast<float>(iClientHeight);
+	vpScreen.MinDepth = 0.0f;
+	vpScreen.MaxDepth = 1.0f;
+
+	rScissorRect = { 0, 0, iClientWidth, iClientHeight };
 }
 
 void thisApp::createDevice() {
@@ -39,7 +121,7 @@ void thisApp::createDevice() {
 }
 
 void thisApp::createFence() {
-	HRESULT hrFence = (md3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE,IID_PPV_ARGS(&mFence)));
+	HRESULT hrFence = (md3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
 	assert(SUCCEEDED(hrFence));
 }
 
@@ -66,16 +148,16 @@ void thisApp::CommandSystem()
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	HRESULT hrCommandQueue(md3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
 	assert(SUCCEEDED(hrCommandQueue));
-	HRESULT hrCommandAllocator(md3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,IID_PPV_ARGS(&mDirectCmdListAlloc)));
+	HRESULT hrCommandAllocator(md3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mDirectCmdListAlloc)));
 	assert(SUCCEEDED(hrCommandAllocator));
-	HRESULT hrCommandList(md3dDevice->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT,mDirectCmdListAlloc, nullptr,IID_PPV_ARGS(&mCommandList)));
+	HRESULT hrCommandList(md3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mDirectCmdListAlloc, nullptr, IID_PPV_ARGS(&mCommandList)));
 	assert(SUCCEEDED(hrCommandList));
 	mCommandList->Close();
 }
 
 void thisApp::CreateSwapChain() {
 	// Release the previous swapchain we will be recreating.
-	//&mSwapChain->Reset();
+	//mSwapChain->Release();
 
 	DXGI_SWAP_CHAIN_DESC sd;
 	sd.BufferDesc.Width = iClientWidth;
@@ -94,7 +176,7 @@ void thisApp::CreateSwapChain() {
 	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	HRESULT hrSwapChain(mdxgiFactory->CreateSwapChain(mCommandQueue,&sd,&mSwapChain));
+	HRESULT hrSwapChain = mdxgiFactory->CreateSwapChain(mCommandQueue, &sd, &mSwapChain);
 	assert(SUCCEEDED(hrSwapChain));
 }
 
@@ -111,7 +193,7 @@ void thisApp::FlushCommandQueue()
 		HANDLE eventHandle = CreateEventEx(nullptr, NULL, false, EVENT_ALL_ACCESS);
 		HRESULT hrEventOnCompletion(mFence->SetEventOnCompletion(mCurrentFence, eventHandle));
 		assert(SUCCEEDED(hrEventOnCompletion));
-		
+
 		WaitForSingleObject(eventHandle, INFINITE);
 		CloseHandle(eventHandle);
 	}
@@ -139,7 +221,7 @@ void thisApp::CreateRtvAndDsvDescriptorHeaps()
 	assert(SUCCEEDED(hrDescdsv));
 }
 
-void thisApp::CalculateFrame(HWND mainWin , wstring mMainWndCaption)
+void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption)
 {
 	int iFrameCnt = 0;
 	float fTimeElapsed = 0.0f;
@@ -148,7 +230,7 @@ void thisApp::CalculateFrame(HWND mainWin , wstring mMainWndCaption)
 
 	if ((thisTime.GetTotalTime() - fTimeElapsed) >= 1.0f)
 	{
-		float fFps = iFrameCnt; 
+		float fFps = iFrameCnt;
 		float mspf = 1000.0f / fFps;
 
 		wstring fpsStr = to_wstring(fFps);
@@ -184,6 +266,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE thisApp::DepthStencilView() {
 //Constant Buffer view (avec srv)
 
 void thisApp::Draw(Time* gameTime) {
+
 	HRESULT hrAllocReset(mDirectCmdListAlloc->Reset());
 	assert(SUCCEEDED(hrAllocReset));
 
@@ -201,7 +284,7 @@ void thisApp::Draw(Time* gameTime) {
 	mCommandList->RSSetViewports(1, &vpScreenViewport);
 	mCommandList->RSSetScissorRects(1, &rScissorRect);
 
-	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::Magenta, 0, nullptr);
+	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::Yellow, 0, nullptr);
 	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE descCbv = CurrentBackBufferView();
