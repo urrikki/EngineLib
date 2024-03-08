@@ -17,6 +17,7 @@ public:
 
     float GetElapsedTime();
     float GetTotalTime();
+    //ouais
 
 private:
     float fDeltaTime;
