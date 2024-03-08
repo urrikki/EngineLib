@@ -1,71 +1,75 @@
 #include "pch.h"
 #include "Time.h"
 
-Time::Time() {
-    bIsPaused = false;
-    dwPauseStart = 0;
-    dwPausedTime = 0;
-    iFrameCount = 0;
-    fFPS = 0.0f;
-}
+Time::Time() {}
 
 Time::~Time() {}
 
-void Time::Start() {
-    dwStart = timeGetTime();
-    dwPrevious = dwStart;
-    fTotalTime = 0.0f;
-    fDeltaTime = 0.0f;
-    iFrameCount = 0;
-    fFPS = 0.0f;
+void Time::Start()
+{
+	mStart = timeGetTime();
+	mPrevious = 0;// mStart;
+	mTotalTime = 0.0f;
+	mDeltaTime = 0.0f;
+	mCountTime = 0;
+	mFPS = 0;
+	mPrevFPS = 0;
 }
 
-void Time::Pause() {
-    if (!bIsPaused) {
-        dwPauseStart = timeGetTime();
-        bIsPaused = true;
-    }
+bool Time::Update()
+{
+	//Current time - Previous Time
+	DWORD totalTimeMs = timeGetTime() - mStart;
+	DWORD dt = totalTimeMs - mPrevious;
+	if (dt < 10)
+	{
+		return false;
+	}
+	mPrevious = totalTimeMs;
+
+	UpdateFPS();
+
+
+	if (dt > 40)
+	{
+		dt = 40;
+	}
+
+	mDeltaTime = dt / 1000.0f;
+	mTotalTime += mDeltaTime;
+
+	return true;
 }
 
-void Time::Resume() {
-    if (bIsPaused) {
-        DWORD pauseEnd = timeGetTime();
-        dwPausedTime += (pauseEnd - dwPauseStart);
-        bIsPaused = false;
-    }
+float Time::GetElapsedTime()
+{
+	return mDeltaTime;
 }
 
-void Time::Update() {
-    if (bIsPaused)
-        return;
-
-    DWORD totalTimeMs = timeGetTime() - dwStart - dwPausedTime;
-    DWORD dt = totalTimeMs - dwPrevious;
-    dwPrevious = totalTimeMs;
-
-    if (dt < 10) {
-        return;
-    }
-
-    fDeltaTime = dt / 1000.0f;
-    fTotalTime += fDeltaTime;
-
-    iFrameCount++;
-    if (fTotalTime >= 1.0f) {
-        fFPS = iFrameCount;
-        iFrameCount = 0;
-        fTotalTime -= 1.0f;
-    }
+float Time::GetTotalTime()
+{
+	return mTotalTime;
 }
 
-float Time::GetElapsedTime() {
-    return fDeltaTime;
+void Time::UpdateFPS()
+{
+	DWORD currentTime = timeGetTime();
+	DWORD elapsedTime = currentTime - mFPSPrevious;
+	mFPSPrevious = currentTime;
+
+	mCountTime += elapsedTime;
+	mFPS++;
+
+	if (mCountTime >= 1000)
+	{
+		mPrevFPS = mFPS;
+		mFPS = 0;
+		mCountTime = 0;
+	}
 }
 
-float Time::GetTotalTime() {
-    return fFPS;
-}
 
-float Time::GetFPS() {
-    return fFPS;
+float Time::GetFPS()
+{
+	return mPrevFPS;
 }

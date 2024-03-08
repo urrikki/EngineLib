@@ -1,31 +1,31 @@
 #pragma once
 #pragma comment(lib, "Winmm.lib")
-
 #include "pch.h"
 #include "timeapi.h"
 
-class Time {
+class Time
+{
 public:
-    Time();
-    ~Time();
+	Time();
+	virtual ~Time();
 
-    void Start();
-    void Pause();
-    void Resume();
-    void Update();
-    float GetElapsedTime();
-    float GetTotalTime();
-    float GetFPS();
+	void Start();
+	bool Update();
+
+	float GetElapsedTime();
+	float GetTotalTime();
+	void UpdateFPS();
+	float GetFPS();
 
 private:
-    DWORD dwStart;
-    DWORD dwPrevious;
-    DWORD dwPauseStart;
-    DWORD dwPausedTime;
-    float fTotalTime;
-    float fDeltaTime;
-    bool bIsPaused;
-    int iFrameCount;
-    float fFPSTime;
-    float fFPS;
+	float mDeltaTime;
+	float mTotalTime;
+	DWORD mStart;
+	DWORD mPrevious;
+	DWORD mCountTime;
+	DWORD mFPSPrevious;
+	int mFPS;
+	int mPrevFPS;
+
 };
+
