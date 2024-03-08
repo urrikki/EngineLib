@@ -18,6 +18,7 @@ void thisApp::Initialize() {
 	}
 #endif
 
+
 createDevice();
 createFence();
 mRtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -25,6 +26,8 @@ mDsvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPT
 mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 createMSAAQuality();
 CommandSystem();
+
+mTime.Start();
 
 }
 
@@ -138,30 +141,24 @@ void thisApp::CreateRtvAndDsvDescriptorHeaps()
 
 float fTimeElapsed = 0.0f;
 
-void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption)
-{
-	int iFrameCnt = 0;
+void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption, Time& thisTime) {
 
-	iFrameCnt++;
+	thisTime.Update();
 
-	if ((thisTime.GetTotalTime() - fTimeElapsed) >= 1.0f)
-	{
-		float fFps = iFrameCnt;
-		float mspf = 1000.0f / fFps;
+	float fFps = thisTime.GetFPS();
+	float mspf = 1000.0f / fFps;
 
-		wstring fpsStr = to_wstring(fFps);
-		wstring mspfStr = to_wstring(mspf);
+	wstring fpsStr = to_wstring(fFps);
+	wstring mspfStr = to_wstring(mspf);
 
-		wstring windowText = mMainWndCaption +
-			L"    fps: " + fpsStr +
-			L"   mspf: " + mspfStr;
+	wstring windowText = mMainWndCaption +
+		L"    fps: " + fpsStr +
+		L"   mspf: " + mspfStr;
 
-		SetWindowText(mainWin, windowText.c_str());
-
-		iFrameCnt = 0;
-		fTimeElapsed += 1.0f;
-	}
+	SetWindowText(mainWin, windowText.c_str());
 }
+
+
 
 //Front and Back buffer
 

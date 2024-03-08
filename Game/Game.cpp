@@ -47,6 +47,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
+    Time thisTime;
+
     // Boucle de messages principale :
     while (GetMessage(&msg, nullptr, 0, 0))
     {
@@ -55,7 +57,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
+        myApp.CalculateFrame(msg.hwnd, mMainWndCaption, thisTime);
         myApp.thisTime.Update();
     }
 
@@ -100,6 +102,8 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        Dans cette fonction, nous enregistrons le handle de l'instance dans une variable globale, puis
 //        nous créons et affichons la fenêtre principale du programme.
 //
+
+
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance; // Stocke le handle d'instance dans la variable globale

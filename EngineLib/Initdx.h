@@ -17,7 +17,7 @@ public:
 	void CreateSwapChain();
 	void FlushCommandQueue();
 	void CreateRtvAndDsvDescriptorHeaps();
-	void CalculateFrame(HWND mainWin, wstring mMainWndCaption);
+	void CalculateFrame(HWND mainWin, wstring mMainWndCaption, Time& thisTime);
 	int mClientWidth = 800;
 	int mClientHeight = 600;
 
@@ -52,4 +52,6 @@ private:
 	int mCurrentFence = 0;
 	ID3D12DescriptorHeap* mRtvHeap;
 	ID3D12DescriptorHeap* mDsvHeap;
+
+	Time mTime;
 };
