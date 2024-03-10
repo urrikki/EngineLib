@@ -73,6 +73,4 @@ public :
 	int iClientWidth = 800;
 	int iClientHeight = 600;
 	float fTimeElapsed = 0.0f;
-
-	Time thisTime;
 };

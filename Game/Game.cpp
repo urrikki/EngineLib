@@ -2,6 +2,8 @@
 #include "Game.h"
 #include "../EngineLib/Initdx.h"
 #include "../EngineLib/Time.h"
+#include "../EngineLib/SceneManager.h"
+#include "../EngineLib/MenuScene.h"
 
 //#include "initdx.h"
 
@@ -11,6 +13,7 @@ std::wstring mMainWndCaption = L"My App";
 
 thisApp myApp;
 HWND hWnd;
+SceneManager sceneManager;
 
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle
@@ -48,6 +51,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     myApp.Initialize(hWnd);
     myApp.OnResize();
 
+    sceneManager.SetActiveScene(std::make_shared<MenuScene>());
+
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME));
 
     MSG msg;
@@ -66,6 +71,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
         myApp.Update(&myApp.thisTime);
         myApp.Draw(&myApp.thisTime);
+
+        float deltaTime = thisTime.GetElapsedTime();
+        sceneManager.UpdateActiveScene(deltaTime);
+        sceneManager.RenderActiveScene();
     }
 
     return (int)msg.wParam;
