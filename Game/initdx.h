@@ -1,6 +1,8 @@
 #pragma once
-#include "pch.h"
-#include "Time.h"
+#pragma once
+
+#include "../EngineLib/framework.h"
+#include "../EngineLib/Time.h"
 #include "synchapi.h"
 
 class thisApp
@@ -9,7 +11,7 @@ public:
 
 	thisApp();
 	virtual ~thisApp();
-	void Initialize(HWND hWnd);
+	void Initialize();
 	void createDevice();
 	void createFence();
 	void createMSAAQuality();
@@ -18,14 +20,11 @@ public:
 	void FlushCommandQueue();
 	void CreateRtvAndDsvDescriptorHeaps();
 	void CalculateFrame(HWND mainWin, wstring mMainWndCaption);
-	void OnResize();
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView();
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView();
 
 	void Draw(Time* gameTime);
 	void Update(Time* gameTime);
-
-	Time thisTime;
 
 private:
 
@@ -51,7 +50,7 @@ private:
 	//const car on veux juste swap entre les deux 
 	//static 
 	static const int SwapChainBufferCount = 2;
-	HWND  mhMainWnd = NULL;
+	HWND  mhMainWnd = nullptr;
 
 	int mCurrentFence = 0;
 	ID3D12DescriptorHeap* mRtvHeap;
@@ -60,19 +59,14 @@ private:
 	D3D12_VIEWPORT vpScreenViewport;
 	D3D12_RECT rScissorRect;
 
-	DXGI_FORMAT formatDepthStencil = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	D3D12_VIEWPORT vpScreen;
-
-public :
+public:
 
 	ID3D12Resource* CurrentBackBuffer();
 	ID3D12Resource* tSwapChainBuffer[SwapChainBufferCount];
-	ID3D12Resource* tDepthStencilBuffer;
 	int iCurrBackBuffer = 0;
 
 	int iClientWidth = 800;
 	int iClientHeight = 600;
-	float fTimeElapsed = 0.0f;
 
 	Time thisTime;
 };

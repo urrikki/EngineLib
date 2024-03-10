@@ -18,6 +18,7 @@
 #include <cstdint>
 #include <fstream>
 #include <sstream>
+#include "d3dx12.h"
 #include <cassert>
 #include <windows.h>
 

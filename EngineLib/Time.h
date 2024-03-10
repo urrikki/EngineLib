@@ -1,6 +1,5 @@
 #pragma once
 #pragma comment(lib, "Winmm.lib")
-
 #include "pch.h"
 #include "timeapi.h"
 
@@ -29,3 +28,4 @@ private:
 	int mPrevFPS;
 
 };
+

@@ -3,11 +3,14 @@
 #include "../EngineLib/Initdx.h"
 #include "../EngineLib/Time.h"
 
+//#include "initdx.h"
+
 #define MAX_LOADSTRING 100
 
 std::wstring mMainWndCaption = L"My App";
 
 thisApp myApp;
+HWND hWnd;
 
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle
@@ -29,19 +32,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Placez le code ici.
-
+    
 
     // Initialise les chaînes globales
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_GAME, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
-    myApp.Initialize();
 
     // Effectue l'initialisation de l'application :
     if (!InitInstance(hInstance, nCmdShow))
     {
         return FALSE;
     }
+
+    myApp.Initialize(hWnd);
+    myApp.OnResize();
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME));
 
@@ -57,8 +62,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+
         myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
-        myApp.thisTime.Update();
+        myApp.Update(&myApp.thisTime);
+        myApp.Draw(&myApp.thisTime);
     }
 
     return (int)msg.wParam;
@@ -108,8 +115,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance; // Stocke le handle d'instance dans la variable globale
 
-    HWND hWnd = CreateWindowW(szWindowClass, mMainWndCaption.c_str(), WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   hWnd = CreateWindowW(szWindowClass, mMainWndCaption.c_str() , WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)
     {
