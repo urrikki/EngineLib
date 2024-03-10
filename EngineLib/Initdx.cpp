@@ -27,8 +27,6 @@ mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DE
 createMSAAQuality();
 CommandSystem();
 
-mTime.Start();
-
 }
 
 void thisApp::createDevice() {
@@ -141,7 +139,7 @@ void thisApp::CreateRtvAndDsvDescriptorHeaps()
 
 float fTimeElapsed = 0.0f;
 
-void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption, Time& thisTime) {
+void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption) {
 
 	thisTime.Update();
 

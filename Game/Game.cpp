@@ -57,7 +57,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        myApp.CalculateFrame(msg.hwnd, mMainWndCaption, thisTime);
+        myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
         myApp.thisTime.Update();
     }
 
