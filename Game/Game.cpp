@@ -1,18 +1,13 @@
-// Game.cpp : Définit le point d'entrée de l'application.
-//
-
 #include "framework.h"
 #include "Game.h"
-#include "../EngineLib/Initdx.h"
-#include "../EngineLib/Time.h"
-
-//#include "initdx.h"
+#include "../EngineLib/ShapeApp.h"
 
 #define MAX_LOADSTRING 100
 
 std::wstring mMainWndCaption = L"My App";
 
-thisApp myApp;
+ShapeApp thisShape;
+
 HWND hWnd;
 
 // Variables globales :
@@ -48,25 +43,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    myApp.Initialize(hWnd);
-    myApp.OnResize();
-
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME));
+    thisShape.Initialize(hWnd);
+    thisShape.OnResize();
 
     MSG msg;
 
     // Boucle de messages principale :
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);    
-        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);    
 
-        myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
-        myApp.Update(&myApp.thisTime);
-        myApp.Draw(&myApp.thisTime);
+        thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
+        thisShape.Update(&thisShape.myApp.thisTime);
+        thisShape.Draw(&thisShape.myApp.thisTime);
     }
 
     return (int) msg.wParam;
@@ -93,7 +83,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GAME));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_GAME);
+    wcex.lpszMenuName   = 0;
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 

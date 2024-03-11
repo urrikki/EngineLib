@@ -1,6 +1,10 @@
 #pragma once
 #include "pch.h"
 #include "Initdx.h"
+#include "uploadbuffer.h"
+#include "shader.h"
+#include "mesh.h"
+#include "Utils.h"
 
 struct Vertex
 {
@@ -8,13 +12,20 @@ struct Vertex
     XMFLOAT4 Color;
 };
 
-struct SubmeshGeometry
+struct mIdentity
 {
-	UINT IndexCount = 0;
-	UINT StartIndexLocation = 0;
-	INT BaseVertexLocation = 0;
-	BoundingBox Bounds;
+	XMFLOAT4X4 WorldViewProj = XMFLOAT4X4 (
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f);
 };
+
+struct ConstantBufferData
+{
+	XMFLOAT4X4 WorldViewProj;
+};
+
 
 struct MeshGeometry
 {
@@ -68,8 +79,7 @@ class ShapeApp
 public :
     ShapeApp();
     ~ShapeApp();
-    void Initialize(HWND hWnd);
-    virtual void BuildGeometry() ;
+	void Initialize(HWND hWnd);
 
 private :
 
@@ -84,9 +94,9 @@ private :
     ID3D12RootSignature* rtRootSignature = nullptr;
     ID3D12DescriptorHeap* mCbvHeap = nullptr;
 
-    //std::unique_ptr<UploadBuffer<ObjectConstants>> mObjectCB = nullptr;
+    UploadBuffer<ConstantBufferData>* mObjectCB = nullptr;
 
-    std::unique_ptr<MeshGeometry> mBoxGeo = nullptr;
+    unique_ptr<Mesh> mBoxGeo = nullptr;
 
     ID3DBlob* bmvsByteCode = nullptr;
     ID3DBlob* bmpsByteCode = nullptr;
@@ -95,14 +105,39 @@ private :
 
     ID3D12PipelineState* mPSO = nullptr;
 
-	XMFLOAT4X4 mIdentity;
-    XMFLOAT4X4 mWorld = mIdentity;
-    XMFLOAT4X4 mView = mIdentity;
-    XMFLOAT4X4 mProj = mIdentity;
+    XMFLOAT4X4 mWorld = XMFLOAT4X4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+    XMFLOAT4X4 mView = XMFLOAT4X4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);;
+    XMFLOAT4X4 mProj = XMFLOAT4X4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);;
 
-    float mTheta = 1.5f * XM_PI;
-    float mPhi = XM_PIDIV4;
-    float mRadius = 5.0f;
+    float fTheta = 1.5f * XM_PI;
+    float fPhi = XM_PIDIV4;
+    float fRadius = 5.0f;
 
+	
+
+private :
+
+	float AspectRatio();
+	
+public:
+
+	void OnResize();
+	void Draw(Time* gameTime);
+	void Update(Time* gameTime);
+	void BuildGeometry();
 	thisApp myApp;
+	Shader thisShader;
+	Utils myUtils;
 };

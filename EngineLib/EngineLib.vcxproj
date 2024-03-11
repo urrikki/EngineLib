@@ -142,21 +142,28 @@
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Initdx.h" />
+    <ClInclude Include="mesh.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="ShapeApp.h" />
     <ClInclude Include="Time.h" />
+    <ClInclude Include="uploadbuffer.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineLib.cpp" />
     <ClCompile Include="Initdx.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="ShapeApp.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
