@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "MenuScene.h"
 #include <iostream>
 
@@ -5,21 +6,34 @@ MenuScene::MenuScene() {}
 
 MenuScene::~MenuScene() {}
 
-void MenuScene::Load() {
+void MenuScene::Initialize() {
+    RECT playButtonBounds = { /* position x, position y, largeur, hauteur */ };
+    buttons.push_back(Button(playButtonBounds, "Jouer"));
+
+    RECT quitButtonBounds = { /* position x, position y, largeur, hauteur */ };
+    buttons.push_back(Button(quitButtonBounds, "Quitter"));
 }
 
-void MenuScene::Update(float deltaTime) {
-    Input::update(/* handle de la fenêtre */)
+void MenuScene::Update(float deltaTime, HWND hWnd) {
+    Input::update(hWnd);
 
     if (Input::isMouseButtonPressed(0)) {
-        POINT mousePos = Input::getMouseDelta();
-        // Vérifier si les coordonnées du clic sont à l'intérieur des coordonnées du bouton "Jouer"
-        // Si oui, passer à la scène de jeu
-        // Sinon, vérifier si les coordonnées sont à l'intérieur des coordonnées du bouton "Quitter"
-        // Si oui, fermer la fenêtre
-        sceneManager.SetActiveScene(std::make_shared<GameScene>());
+        for (const auto& button : buttons) {
+            if (button.IsClicked()) {
+                if (button.GetText() == "Jouer") {
+                    //sceneManager->SetActiveScene(std::make_shared<GameScene>());
+                }
+                else if (button.GetText() == "Quitter") {
+                    PostQuitMessage(0);
+                }
+            }
+        }
     }
+
 }
 
 void MenuScene::Render() {
+    for (const auto& button : buttons) {
+        button.Render();
+    }
 }
