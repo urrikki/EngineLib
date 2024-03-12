@@ -1,9 +1,9 @@
 #include "framework.h"
 #include "Game.h"
-#include "../EngineLib/Initdx.h"
 #include "../EngineLib/Time.h"
 #include "../EngineLib/SceneManager.h"
 #include "../EngineLib/MenuScene.h"
+#include "../EngineLib/Input.h"
 
 //#include "initdx.h"
 #include "../EngineLib/ShapeApp.h"
@@ -15,7 +15,7 @@ std::wstring mMainWndCaption = L"My App";
 ShapeApp thisShape;
 
 HWND hWnd;
-SceneManager sceneManager;
+//SceneManager sceneManager;
 
 // Variables globales :
 HINSTANCE hInst;                                // instance actuelle
@@ -50,22 +50,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    myApp.Initialize(hWnd);
-    myApp.OnResize();
+    thisShape.Initialize(hWnd);
+    thisShape.OnResize();
 
-    sceneManager.SetActiveScene(std::make_shared<MenuScene>());
+    /*sceneManager.SetActiveScene(std::make_shared<MenuScene>());*/
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME));
 
     MSG msg;
-
-    Time thisTime;
 
     // Boucle de messages principale :
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);    
+
+        Input::update(hWnd);
 
         thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
         thisShape.Update(&thisShape.myApp.thisTime);
@@ -127,7 +127,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         return FALSE;
     }
 
-    myApp.thisTime.Start();
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 

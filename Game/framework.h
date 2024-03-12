@@ -1,15 +1,23 @@
-// header.h : fichier Include pour les fichiers Include système standard,
-// ou les fichiers Include spécifiques aux projets
-//
-
 #pragma once
 
-#include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // Exclure les en-têtes Windows rarement utilisés
-// Fichiers d'en-tête Windows
+
+#include <comdef.h>
+#include <fstream>
+#include <float.h>
+#include <cmath>
+#include <WindowsX.h>
+
+#include <d3d12.h>
+#include <dxgi1_4.h>
+#include <DirectXMath.h>
+#include <DirectXColors.h>
+#include <algorithm>
+
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+
+#include <DirectXMath.h>
+using namespace DirectX;
+
 #include <windows.h>
-// Fichiers d'en-tête C RunTime
-#include <stdlib.h>
-#include <malloc.h>
-#include <memory.h>
-#include <tchar.h>

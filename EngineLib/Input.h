@@ -1,7 +1,7 @@
 #pragma once
+
 #include"pch.h"
 #include "Framework.h"
-#include <Windows.h>
 
 enum class KeyState {
     Up,
