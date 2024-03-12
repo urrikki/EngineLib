@@ -6,12 +6,14 @@
 #include "../EngineLib/MenuScene.h"
 
 //#include "initdx.h"
+#include "../EngineLib/ShapeApp.h"
 
 #define MAX_LOADSTRING 100
 
 std::wstring mMainWndCaption = L"My App";
 
-thisApp myApp;
+ShapeApp thisShape;
+
 HWND hWnd;
 SceneManager sceneManager;
 
@@ -62,19 +64,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Boucle de messages principale :
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);    
 
-        myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
-        myApp.Update(&myApp.thisTime);
-        myApp.Draw(&myApp.thisTime);
-
-        float deltaTime = thisTime.GetElapsedTime();
-        sceneManager.UpdateActiveScene(deltaTime);
-        sceneManager.RenderActiveScene();
+        thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
+        thisShape.Update(&thisShape.myApp.thisTime);
+        thisShape.Draw(&thisShape.myApp.thisTime);
     }
 
     return (int)msg.wParam;
@@ -93,17 +88,17 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = WndProc;
-    wcex.cbClsExtra = 0;
-    wcex.cbWndExtra = 0;
-    wcex.hInstance = hInstance;
-    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GAME));
-    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_GAME);
-    wcex.lpszClassName = szWindowClass;
-    wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.style          = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc    = WndProc;
+    wcex.cbClsExtra     = 0;
+    wcex.cbWndExtra     = 0;
+    wcex.hInstance      = hInstance;
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GAME));
+    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.lpszMenuName   = 0;
+    wcex.lpszClassName  = szWindowClass;
+    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     return RegisterClassExW(&wcex);
 }

@@ -22,13 +22,6 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView();
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView();
 
-	void Draw(Time* gameTime);
-	void Update(Time* gameTime);
-
-	Time thisTime;
-
-private:
-
 	IDXGIFactory4* mdxgiFactory;
 	ID3D12Device* md3dDevice;
 	ID3D12Fence* mFence;
@@ -57,7 +50,7 @@ private:
 	ID3D12DescriptorHeap* mRtvHeap;
 	ID3D12DescriptorHeap* mDsvHeap;
 
-	D3D12_VIEWPORT vpScreenViewport;
+	//D3D12_VIEWPORT vpScreenViewport;
 	D3D12_RECT rScissorRect;
 
 	DXGI_FORMAT formatDepthStencil = DXGI_FORMAT_D24_UNORM_S8_UINT;

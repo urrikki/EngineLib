@@ -44,9 +44,9 @@ void thisApp::OnResize()
 	HRESULT hrmCommandLReset = mCommandList->Reset(mDirectCmdListAlloc, nullptr);
 	assert(SUCCEEDED(hrmCommandLReset));
 
-	//for (int i = 0; i < SwapChainBufferCount; ++i)
-		//tSwapChainBuffer[i]->Release();
-	//tDepthStencilBuffer->Release();
+	/*for (int i = 0; i < SwapChainBufferCount; ++i)
+		tSwapChainBuffer[i]->Reset();
+	tDepthStencilBuffer->Reset();*/
 
 	
 	HRESULT hrResizeSC = (mSwapChain->ResizeBuffers(SwapChainBufferCount,iClientWidth, iClientHeight,mBackBufferFormat,DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
@@ -72,7 +72,6 @@ void thisApp::OnResize()
 	depthStencilDesc.MipLevels = 1;
 
 	depthStencilDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-
 	depthStencilDesc.SampleDesc.Count = m4xMsaaState ? 4 : 1;
 	depthStencilDesc.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
 	depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
@@ -83,7 +82,8 @@ void thisApp::OnResize()
 	optClear.DepthStencil.Depth = 1.0f;
 	optClear.DepthStencil.Stencil = 0;
 	CD3DX12_HEAP_PROPERTIES properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	HRESULT hwCreateResource(md3dDevice->CreateCommittedResource(&properties,D3D12_HEAP_FLAG_NONE,&depthStencilDesc,D3D12_RESOURCE_STATE_COMMON,&optClear,IID_PPV_ARGS(&tDepthStencilBuffer)));
+	HRESULT hwCreateResource = (md3dDevice->CreateCommittedResource(&properties,D3D12_HEAP_FLAG_NONE,&depthStencilDesc,D3D12_RESOURCE_STATE_COMMON,&optClear,IID_PPV_ARGS(&tDepthStencilBuffer)));
+	assert(SUCCEEDED(hwCreateResource));
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
@@ -159,7 +159,7 @@ void thisApp::CommandSystem()
 
 void thisApp::CreateSwapChain() {
 	// Release the previous swapchain we will be recreating.
-	//mSwapChain->Release();
+	//mSwapChain->reset();
 
 	DXGI_SWAP_CHAIN_DESC sd;
 	sd.BufferDesc.Width = iClientWidth;
@@ -259,61 +259,3 @@ D3D12_CPU_DESCRIPTOR_HANDLE thisApp::DepthStencilView() {
 }
 
 //Constant Buffer view (avec srv)
-
-void thisApp::Draw(Time* gameTime) {
-
-	HRESULT hrAllocReset(mDirectCmdListAlloc->Reset());
-	assert(SUCCEEDED(hrAllocReset));
-
-	HRESULT hrCommandListReset(mCommandList->Reset(mDirectCmdListAlloc, nullptr));
-	assert(SUCCEEDED(hrAllocReset));
-
-	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-	);
-
-	mCommandList->ResourceBarrier(1, &barrier);
-
-	mCommandList->RSSetViewports(1, &vpScreenViewport);
-	mCommandList->RSSetScissorRects(1, &rScissorRect);
-
-	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::Yellow, 0, nullptr);
-	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE descCbv = CurrentBackBufferView();
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvTarget = DepthStencilView();
-	mCommandList->OMSetRenderTargets(1, &descCbv, true, &dsvTarget);
-
-
-	//// DRAW START
-
-
-
-	//// DRAW END
-
-
-	CD3DX12_RESOURCE_BARRIER barrierTwo = CD3DX12_RESOURCE_BARRIER::Transition(
-		CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PRESENT);
-
-	mCommandList->ResourceBarrier(1, &barrierTwo);
-
-	HRESULT hrCommandClose(mCommandList->Close());
-	assert(SUCCEEDED(hrCommandClose));
-
-	ID3D12CommandList* cmdsLists[] = { mCommandList };
-	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-	HRESULT hrSwapChainPresent(mSwapChain->Present(0, 0));
-	assert(SUCCEEDED(hrSwapChainPresent));
-	iCurrBackBuffer = (iCurrBackBuffer + 1) % SwapChainBufferCount;
-
-	FlushCommandQueue();
-}
-
-void thisApp::Update(Time* gameTime) {
-	//thisTime.Update();
-}
