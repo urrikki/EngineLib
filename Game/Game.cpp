@@ -1,6 +1,7 @@
 #include "framework.h"
 #include "Game.h"
 #include "../EngineLib/ShapeApp.h"
+#include "../EngineLib/GameObject.h"
 
 #define MAX_LOADSTRING 100
 
@@ -30,7 +31,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Placez le code ici.
-    
+    GameObject* go = new GameObject;
+    go->AddComponent<MeshRenderer>();
+    thisShape.listGo.push_back(go);
 
     // Initialise les chaînes globales
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -43,10 +46,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
+    MSG msg;
+
+    
     thisShape.Initialize(hWnd);
     thisShape.OnResize();
 
-    MSG msg;
+    
 
     // Boucle de messages principale :
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -55,7 +61,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         DispatchMessage(&msg);    
 
         thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
+        //go->Transform.Rotate(0.01f, 0.04f, -0.02f);
         thisShape.Update(&thisShape.myApp.thisTime);
+        //go->Transform.UpdateWorld();
         thisShape.Draw(&thisShape.myApp.thisTime);
     }
 

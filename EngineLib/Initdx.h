@@ -41,8 +41,6 @@ public :
 	IDXGISwapChain* mSwapChain;
 	bool m4xMsaaState = false;
 
-	//const car on veux juste swap entre les deux 
-	//static 
 	static const int SwapChainBufferCount = 2;
 	HWND  mhMainWnd = NULL;
 
@@ -50,7 +48,6 @@ public :
 	ID3D12DescriptorHeap* mRtvHeap;
 	ID3D12DescriptorHeap* mDsvHeap;
 
-	//D3D12_VIEWPORT vpScreenViewport;
 	D3D12_RECT rScissorRect;
 
 	DXGI_FORMAT formatDepthStencil = DXGI_FORMAT_D24_UNORM_S8_UINT;
