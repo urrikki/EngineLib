@@ -44,11 +44,11 @@ void ShapeApp::OnResize()
 
 void ShapeApp::Update(Time* gameTime)
 {
+   
     float x = fRadius * sinf(fPhi) * cosf(fTheta);
     float z = fRadius * sinf(fPhi) * sinf(fTheta);
     float y = fRadius * cosf(fPhi);
 
-    
     //Camera* myCam = listGo[h]->GetComponent<Camera>();
     // if (myCam)
     //XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
@@ -60,6 +60,19 @@ void ShapeApp::Update(Time* gameTime)
     XMStoreFloat4x4(&mView, view);
 
     XMMATRIX world = XMLoadFloat4x4(&mWorld);
+    if (listGo.empty())
+    {
+        XMMATRIX world = XMLoadFloat4x4(&mWorld);
+    }
+    else
+    {
+        for (int h = 0; h < listGo.size(); h++) {
+            listGo[h]->Transform.UpdateWorld();
+            XMMATRIX world = XMLoadFloat4x4(&listGo[h]->Transform.matrix); 
+        }
+    }
+    
+    //XMMATRIX world = XMLoadFloat4x4(&mWorld);
     XMMATRIX proj = XMLoadFloat4x4(&mProj);
     XMMATRIX worldViewProj = world * view * proj;
 

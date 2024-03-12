@@ -20,6 +20,7 @@ public :
 	void InitMesh();
 	SubmeshGeometry createSubmesh(array<uint16_t, 36> indices);
 
+	void Update() override;
 private :
 
 	Shader thisShader;

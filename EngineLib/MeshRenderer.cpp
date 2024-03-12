@@ -31,3 +31,7 @@ SubmeshGeometry MeshRenderer::createSubmesh(array<uint16_t, 36> indices)
 
     return submesh;
 }
+
+void MeshRenderer::Update() {
+    
+}

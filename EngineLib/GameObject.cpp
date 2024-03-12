@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "GameObject.h"
 
-GameObject::GameObject() {}
+GameObject::GameObject() {
+	Transform.Identity();
+}
 
 GameObject::~GameObject()
 {

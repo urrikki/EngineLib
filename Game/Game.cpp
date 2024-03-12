@@ -47,12 +47,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     MSG msg;
-
     
     thisShape.Initialize(hWnd);
     thisShape.OnResize();
-
-    
 
     // Boucle de messages principale :
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -61,7 +58,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         DispatchMessage(&msg);    
 
         thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
-        //go->Transform.Rotate(0.01f, 0.04f, -0.02f);
+        go->Transform.Rotate(0.01f, 0.04f, -0.02f);
         thisShape.Update(&thisShape.myApp.thisTime);
         //go->Transform.UpdateWorld();
         thisShape.Draw(&thisShape.myApp.thisTime);
