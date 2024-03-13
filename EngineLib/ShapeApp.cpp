@@ -51,9 +51,6 @@ void ShapeApp::Update(Time* gameTime)
     //float z = fRadius * sinf(fPhi) * sinf(fTheta);
     //float y = fRadius * cosf(fPhi);
 
-    //Camera* myCam = listGo[h]->GetComponent<Camera>();
-    // if (myCam)
-    //XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
     XMVECTOR pos = XMVectorSet(0.0f, 2.0f, 10.0f, 1.0f);
     XMVECTOR target = XMVectorZero();
     XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -248,9 +245,7 @@ void ShapeApp::BuildGeometry()
             SubmeshGeometry submesh = pMesh->createSubmesh(indices);
             pMesh->mBoxGeo->DrawArgs["box"] = submesh;
         }
-    }
-
-   
+    } 
 }
 
 void ShapeApp::BuildPSO()
