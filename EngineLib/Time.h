@@ -18,8 +18,6 @@ public:
 	float GetFPS();
 
 private:
-	float mDeltaTime;
-	float mTotalTime;
 	DWORD mStart;
 	DWORD mPrevious;
 	DWORD mCountTime;

@@ -62,29 +62,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     go2->setPos(-1.0f, 0.0f, 0.0f);
     thisShape.listGo[1]->Transform.UpdateWorld();
 
-    // Boucle de messages principale :
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);    
+    thisShape.myApp.thisTime.Start();
 
-        thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
-        //go->Transform.Rotate(0.01f, 0.04f, -0.02f);
-        //go->Transform.UpdateWorld();
+    bool run = true;
+    while( run )
+    {
+    // Boucle de messages principale :
+        //On s'occupe de windows
+        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
+            {
+                run = false;
+                break;
+            }
+        }
+
+        //Puis de notre jeu 
+        //thisShape.myApp.thisTime.Update();
+        thisShape.listGo[0]->Transform.Rotate(0.01f, 0.04f, -0.02f);
+        thisShape.listGo[0]->Transform.UpdateWorld();
+        thisShape.listGo[1]->Transform.Rotate(-0.01f, -0.04f, 0.02f);
+        thisShape.listGo[1]->Transform.UpdateWorld();
         thisShape.Update(&thisShape.myApp.thisTime);
         thisShape.Draw(&thisShape.myApp.thisTime);
+        thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);        
     }
 
     return (int) msg.wParam;
 }
 
-
-
-//
-//  FONCTION : MyRegisterClass()
-//
-//  OBJECTIF : Inscrit la classe de fenêtre.
-//
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
@@ -106,16 +115,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
-//
-//   FONCTION : InitInstance(HINSTANCE, int)
-//
-//   OBJECTIF : enregistre le handle d'instance et crée une fenêtre principale
-//
-//   COMMENTAIRES :
-//
-//        Dans cette fonction, nous enregistrons le handle de l'instance dans une variable globale, puis
-//        nous créons et affichons la fenêtre principale du programme.
-//
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Stocke le handle d'instance dans la variable globale
@@ -134,16 +133,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-//
-//  FONCTION : WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  OBJECTIF : Traite les messages pour la fenêtre principale.
-//
-//  WM_COMMAND  - traite le menu de l'application
-//  WM_PAINT    - Dessine la fenêtre principale
-//  WM_DESTROY  - génère un message d'arrêt et retourne
-//
-//
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)

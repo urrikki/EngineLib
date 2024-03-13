@@ -30,7 +30,6 @@ mhMainWnd = hWnd;
 	CreateSwapChain();
 	CreateRtvAndDsvDescriptorHeaps();
 
-	thisTime.Start();
 }
 
 void thisApp::OnResize()
@@ -225,19 +224,20 @@ void thisApp::CreateRtvAndDsvDescriptorHeaps()
 
 void thisApp::CalculateFrame(HWND mainWin, wstring mMainWndCaption) {
 
-	thisTime.Update();
+	if (thisTime.Update())
+	{
+		float fFps = thisTime.GetFPS();
+		float mspf = 1000.0f / fFps;
 
-	float fFps = thisTime.GetFPS();
-	float mspf = 1000.0f / fFps;
+		wstring fpsStr = to_wstring(fFps);
+		wstring mspfStr = to_wstring(mspf);
 
-	wstring fpsStr = to_wstring(fFps);
-	wstring mspfStr = to_wstring(mspf);
+		wstring windowText = mMainWndCaption +
+			L"    fps: " + fpsStr +
+			L"   mspf: " + mspfStr;
 
-	wstring windowText = mMainWndCaption +
-		L"    fps: " + fpsStr +
-		L"   mspf: " + mspfStr;
-
-	SetWindowText(mainWin, windowText.c_str());
+		SetWindowText(mainWin, windowText.c_str());
+	}	
 }
 
 //Front and Back buffer

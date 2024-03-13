@@ -27,6 +27,8 @@ void ShapeApp::Initialize(HWND hWnd)
     myApp.mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
     myApp.FlushCommandQueue();
+
+    //myApp.thisTime.Start();
 }
 
 float ShapeApp::AspectRatio()
@@ -45,9 +47,9 @@ void ShapeApp::OnResize()
 void ShapeApp::Update(Time* gameTime)
 {
    
-    float x = fRadius * sinf(fPhi) * cosf(fTheta);
-    float z = fRadius * sinf(fPhi) * sinf(fTheta);
-    float y = fRadius * cosf(fPhi);
+    //float x = fRadius * sinf(fPhi) * cosf(fTheta);
+    //float z = fRadius * sinf(fPhi) * sinf(fTheta);
+    //float y = fRadius * cosf(fPhi);
 
     //Camera* myCam = listGo[h]->GetComponent<Camera>();
     // if (myCam)
@@ -60,7 +62,7 @@ void ShapeApp::Update(Time* gameTime)
     XMStoreFloat4x4(&mView, view);
 
     for (int h = 0; h < listGo.size(); h++) {
-        listGo[h]->Transform.UpdateWorld();
+        //listGo[h]->Transform.UpdateWorld();
         XMMATRIX world = XMLoadFloat4x4(&listGo[h]->Transform.matrix); 
         XMMATRIX proj = XMLoadFloat4x4(&mProj);
         XMMATRIX worldViewProj = world * view * proj;
@@ -83,7 +85,7 @@ void ShapeApp::Draw(Time* gameTime) {
     CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(myApp.CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     myApp.mCommandList->ResourceBarrier(1, &barrier);
 
-    myApp.mCommandList->ClearRenderTargetView(myApp.CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
+    myApp.mCommandList->ClearRenderTargetView(myApp.CurrentBackBufferView(), Colors::Black, 0, nullptr);
     myApp.mCommandList->ClearDepthStencilView(myApp.DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
     D3D12_CPU_DESCRIPTOR_HANDLE handleDSV = myApp.DepthStencilView();
@@ -93,27 +95,25 @@ void ShapeApp::Draw(Time* gameTime) {
     ID3D12DescriptorHeap* descriptorHeaps[] = { mCbvHeap };
     myApp.mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
     
+    myApp.mCommandList->SetGraphicsRootSignature(rtRootSignature);
+
+    myApp.mCommandList->SetPipelineState(mPSO);
+
     for (int h = 0; h < listGo.size(); h++) {
         MeshRenderer* pMesh = listGo[h]->GetComponent<MeshRenderer>();
-        if (pMesh) 
-
-            myApp.mCommandList->SetGraphicsRootSignature(rtRootSignature);
-
-            myApp.mCommandList->SetPipelineState(mPSO);
-    
+        if (pMesh)
+        {
             D3D12_VERTEX_BUFFER_VIEW boxGeoVBV = pMesh->mBoxGeo->VertexBufferView();
             myApp.mCommandList->IASetVertexBuffers(0, 1, &boxGeoVBV);
             D3D12_INDEX_BUFFER_VIEW boxGeoIBV = pMesh->mBoxGeo->IndexBufferView();
             myApp.mCommandList->IASetIndexBuffer(&boxGeoIBV);
             myApp.mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-            //myApp.mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
             myApp.mCommandList->SetGraphicsRootConstantBufferView(0, listGo[h]->mObjectCB->Resource()->GetGPUVirtualAddress());
 
             myApp.mCommandList->DrawIndexedInstanced(
                 pMesh->mBoxGeo->DrawArgs["box"].IndexCount,
                 1, 0, 0, 0);
-              
+        }
     }
     
 
@@ -146,6 +146,7 @@ void ShapeApp::BuildDescriptorHeaps()
 void ShapeApp::BuildConstantBuffers()
 {
     for (int h = 0; h < listGo.size(); h++) {
+        delete listGo[h]->mObjectCB;
         listGo[h]->mObjectCB = new UploadBuffer<ConstantBufferData>(myApp.md3dDevice, 1, true);
     }
 }

@@ -8,12 +8,11 @@ Time::~Time() {}
 void Time::Start()
 {
 	mStart = timeGetTime();
-	mPrevious = 0;// mStart;
-	mTotalTime = 0.0f;
-	mDeltaTime = 0.0f;
+	mPrevious = 0;
 	mCountTime = 0;
 	mFPS = 0;
-	mPrevFPS = 0;
+	mPrevFPS = 0; 
+	UpdateFPS();
 }
 
 bool Time::Update()
@@ -29,27 +28,14 @@ bool Time::Update()
 
 	UpdateFPS();
 
-
 	if (dt > 40)
 	{
 		dt = 40;
 	}
 
-	mDeltaTime = dt / 1000.0f;
-	mTotalTime += mDeltaTime;
-
 	return true;
 }
 
-float Time::GetElapsedTime()
-{
-	return mDeltaTime;
-}
-
-float Time::GetTotalTime()
-{
-	return mTotalTime;
-}
 
 void Time::UpdateFPS()
 {
