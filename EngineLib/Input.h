@@ -2,27 +2,39 @@
 
 #include"pch.h"
 #include "Framework.h"
+#include "Math.h"
 
-enum class KeyState {
-    Up,
-    Down,
-    Pressed,
-    Released
+enum class  MouseButton
+{
+	Left = 0,
+	Middle,
+	Right
 };
 
 class Input {
-private:
-    static bool keys[256];
-    static KeyState keyStates[256];
-    static POINT prevMousePos;
-    static bool mouseButtons[3];
-    static KeyState mouseButtonStates[3];
-
 public:
-    static bool isKeyPressed(char key);
-    static KeyState getKeyState(char key);
-    static POINT getMouseDelta();
-    static bool isMouseButtonPressed(int button); // 0 = gauche, 1 = droit, 2 = milieu
-    static KeyState getMouseButtonState(int button);
-    static void update(HWND hWnd);
+	Input();
+
+	virtual bool isMouseDown(const  MouseButton& button);
+	virtual bool isMouseUp(const  MouseButton& button);
+
+	virtual float getMouseXAxis();
+	virtual float getMouseYAxis();
+
+	virtual void enablePlayMode(bool enable);
+
+	void setScreenArea(const  Rect& area);
+	void update();
+
+private:
+	short m_keys_state[256] = {};
+	short m_old_keys_state[256] = {};
+	short m_keys_state_res[256] = {};
+
+	bool m_playEnable = false;
+	Vec2 m_old_mouse_pos;
+	bool m_first_time = true;
+	Rect m_screenArea;
+	Vec2 m_deltaMouse;
+	int states_index = 0;
 };

@@ -4,6 +4,7 @@
 #include "../EngineLib/SceneManager.h"
 #include "../EngineLib/MenuScene.h"
 #include "../EngineLib/Input.h"
+#include "../EngineLib/Camera.h"
 
 //#include "initdx.h"
 #include "../EngineLib/ShapeApp.h"
@@ -13,6 +14,7 @@
 std::wstring mMainWndCaption = L"My App";
 
 ShapeApp thisShape;
+Camera thisCamera;
 
 HWND hWnd;
 //SceneManager sceneManager;
@@ -59,13 +61,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
+    Camera thisCamera;
+
     // Boucle de messages principale :
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);    
 
-        Input::update(hWnd);
+        // Get view and projection matrices
+        Mat viewMatrix, projectionMatrix;
+        thisCamera.getViewMatrix(viewMatrix);
+        thisCamera.getProjectionMatrix(projectionMatrix);
 
         thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
         thisShape.Update(&thisShape.myApp.thisTime);

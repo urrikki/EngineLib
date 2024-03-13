@@ -3,43 +3,30 @@
 #include "framework.h"
 #include "Input.h"
 #include "ShapeApp.h"
+#include "Math.h"
 
 using namespace DirectX;
 
 class Camera
 {
 public:
-    Camera();
-    ~Camera();
+	Camera();
+	virtual ~Camera();
 
-    void Update(float deltaTime);
+	void update();
 
-    void SetPosition(float x, float y, float z);
-    void SetRotation(float pitch, float yaw, float roll);
+	void getViewMatrix(Mat& view);
+	void getProjectionMatrix(Mat& proj);
 
-    void Pitch(float angle);
-    void RotateY(float angle);
-
-    XMMATRIX GetViewMatrix();
-    XMMATRIX GetProjectionMatrix();
+	void setFarPlane(float farPlane);
+	void setScreenArea(const  Rect& screen);
 
 private:
-    XMFLOAT3 mPosition;
-    XMFLOAT3 mRight;
-    XMFLOAT3 mUp;
-    XMFLOAT3 mLook;
+	Mat m_view;
+	Mat m_projection;
+	Mat m_world;
 
-    float mFOV;
-    float mAspect;
-    float mNearPlane;
-    float mFarPlane;
-
-    XMMATRIX mViewMatrix;
-    XMMATRIX mProjectionMatrix;
-
-    float mMouseSensitivity;
-
-    void UpdateViewMatrix();
-    DirectX::XMFLOAT4X4 mView = ;
+	float m_farPlane = 100.0f;
+	Rect m_screenArea;
 
 };
