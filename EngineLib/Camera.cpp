@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Camera.h"
 
 Camera::Camera() :
@@ -23,13 +24,9 @@ void Camera::Update(float deltaTime)
 {
     POINT mouseDelta = Input::getMouseDelta();
 
-    mPosition.x += mRight.x * mouseDelta.x * mMouseSensitivity;
-    mPosition.y += mRight.y * mouseDelta.x * mMouseSensitivity;
-    mPosition.z += mRight.z * mouseDelta.x * mMouseSensitivity;
-
-    mPosition.x += mUp.x * mouseDelta.y * mMouseSensitivity;
-    mPosition.y += mUp.y * mouseDelta.y * mMouseSensitivity;
-    mPosition.z += mUp.z * mouseDelta.y * mMouseSensitivity;
+    mPosition.x += mLook.x * mouseDelta.x * mMouseSensitivity;
+    mPosition.y += mLook.y * mouseDelta.y * mMouseSensitivity;
+    mPosition.z += mLook.z * mouseDelta.y * mMouseSensitivity;
 
     UpdateViewMatrix();
 }
@@ -45,9 +42,25 @@ void Camera::SetRotation(float pitch, float yaw, float roll)
     // Not implemented for this simple camera
 }
 
+void Camera::Pitch(float angle)
+{
+    XMVECTOR look = XMLoadFloat3(&mLook);
+    XMMATRIX rotation = XMMatrixRotationAxis(XMLoadFloat3(&mRight), angle);
+    look = XMVector3TransformNormal(look, rotation);
+    XMStoreFloat3(&mLook, look);
+}
+
+void Camera::RotateY(float angle)
+{
+    XMVECTOR look = XMLoadFloat3(&mLook);
+    XMMATRIX rotation = XMMatrixRotationY(angle);
+    look = XMVector3TransformNormal(look, rotation);
+    XMStoreFloat3(&mLook, look);
+}
+
 XMMATRIX Camera::GetViewMatrix()
 {
-    return mViewMatrix;
+    return mView;
 }
 
 XMMATRIX Camera::GetProjectionMatrix()
@@ -57,10 +70,11 @@ XMMATRIX Camera::GetProjectionMatrix()
 
 void Camera::UpdateViewMatrix()
 {
-    XMVECTOR pos = XMVectorSet(mPosition.x, mPosition.y, mPosition.z, 0.0f);
-    XMVECTOR right = XMVectorSet(mRight.x, mRight.y, mRight.z, 0.0f);
-    XMVECTOR up = XMVectorSet(mUp.x, mUp.y, mUp.z, 0.0f);
-    XMVECTOR look = XMVectorSet(mLook.x, mLook.y, mLook.z, 0.0f);
+
+    XMVECTOR right = XMLoadFloat3(&mRight);
+    XMVECTOR up = XMLoadFloat3(&mUp);
+    XMVECTOR look = XMLoadFloat3(&mLook);
+    XMVECTOR pos = XMLoadFloat3(&mPosition);
 
     look = XMVector3Normalize(look);
     up = XMVector3Normalize(XMVector3Cross(look, right));
@@ -70,27 +84,23 @@ void Camera::UpdateViewMatrix()
     float y = -XMVectorGetX(XMVector3Dot(pos, up));
     float z = -XMVectorGetX(XMVector3Dot(pos, look));
 
-    mRight = XMFLOAT3(XMVectorGetX(right), XMVectorGetY(right), XMVectorGetZ(right));
-    mUp = XMFLOAT3(XMVectorGetX(up), XMVectorGetY(up), XMVectorGetZ(up));
-    mLook = XMFLOAT3(XMVectorGetX(look), XMVectorGetY(look), XMVectorGetZ(look));
+    mView(0, 0) = XMVectorGetX(right);
+    mView(1, 0) = XMVectorGetY(right);
+    mView(2, 0) = XMVectorGetZ(right);
+    mView(3, 0) = x;
 
-    mViewMatrix(0, 0) = mRight.x;
-    mViewMatrix(1, 0) = mRight.y;
-    mViewMatrix(2, 0) = mRight.z;
-    mViewMatrix(3, 0) = x;
+    mView(0, 1) = XMVectorGetX(up);
+    mView(1, 1) = XMVectorGetY(up);
+    mView(2, 1) = XMVectorGetZ(up);
+    mView(3, 1) = y;
 
-    mViewMatrix(0, 1) = mUp.x;
-    mViewMatrix(1, 1) = mUp.y;
-    mViewMatrix(2, 1) = mUp.z;
-    mViewMatrix(3, 1) = y;
+    mView(0, 2) = XMVectorGetX(look);
+    mView(1, 2) = XMVectorGetY(look);
+    mView(2, 2) = XMVectorGetZ(look);
+    mView(3, 2) = z;
 
-    mViewMatrix(0, 2) = mLook.x;
-    mViewMatrix(1, 2) = mLook.y;
-    mViewMatrix(2, 2) = mLook.z;
-    mViewMatrix(3, 2) = z;
-
-    mViewMatrix(0, 3) = 0.0f;
-    mViewMatrix(1, 3) = 0.0f;
-    mViewMatrix(2, 3) = 0.0f;
-    mViewMatrix(3, 3) = 1.0f;
+    mView(0, 3) = 0.0f;
+    mView(1, 3) = 0.0f;
+    mView(2, 3) = 0.0f;
+    mView(3, 3) = 1.0f;
 }

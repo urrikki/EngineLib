@@ -2,6 +2,7 @@
 
 #include "framework.h"
 #include "Input.h"
+#include "ShapeApp.h"
 
 using namespace DirectX;
 
@@ -15,6 +16,9 @@ public:
 
     void SetPosition(float x, float y, float z);
     void SetRotation(float pitch, float yaw, float roll);
+
+    void Pitch(float angle);
+    void RotateY(float angle);
 
     XMMATRIX GetViewMatrix();
     XMMATRIX GetProjectionMatrix();
@@ -36,5 +40,6 @@ private:
     float mMouseSensitivity;
 
     void UpdateViewMatrix();
-};
+    DirectX::XMFLOAT4X4 mView = ;
 
+};

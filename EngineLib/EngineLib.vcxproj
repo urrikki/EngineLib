@@ -148,6 +148,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Initdx.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="MenuScene.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Scene.h" />
