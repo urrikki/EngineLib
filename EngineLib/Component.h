@@ -1,6 +1,5 @@
 #pragma once
 #include "pch.h"
-#include "Framework.h"
 
 class Component
 {

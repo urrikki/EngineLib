@@ -33,10 +33,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: Placez le code ici.
     GameObject* go = new GameObject;
     go->AddComponent<MeshRenderer>();
+    go->AddComponent<Collider>();
     thisShape.listGo.push_back(go);
    
     GameObject* go2 = new GameObject;
     go2->AddComponent<MeshRenderer>();
+    go->AddComponent<Collider>();
     thisShape.listGo.push_back(go2);
     
 

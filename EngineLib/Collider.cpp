@@ -9,21 +9,10 @@ void Collider::Update() {
 
 }
 
-XMFLOAT3 Collider::findCenterPos(const array<Vertex, 8>& vertices) {    
-    XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-    for (const auto& vertex : vertices)
-    {
-        center.x += vertex.Pos.x;
-        center.y += vertex.Pos.y;
-        center.z += vertex.Pos.z;
-    }
-
-    center.x /= vertices.size();
-    center.y /= vertices.size();
-    center.z /= vertices.size();
-
-    return center;  
+void Collider::setCenterPos(XMFLOAT3 otherCenter) {       
+    center.x = otherCenter.x;
+    center.y = otherCenter.y;
+    center.z = otherCenter.z;     
 }
 
 bool Collider::distanceBetweenCenter(XMFLOAT3 objCenter) {

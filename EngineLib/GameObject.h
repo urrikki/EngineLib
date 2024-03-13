@@ -3,9 +3,7 @@
 #include "Component.h"
 #include "Transform.h"
 #include "uploadbuffer.h"
-#include "pch.h"
 #include <vector>
-
 
 struct ConstantBufferData
 {

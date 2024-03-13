@@ -6,6 +6,7 @@
 #include "Utils.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
+#include "Collider.h"
 #include <vector>
 
 struct Vertex
@@ -68,6 +69,9 @@ public:
 	void Draw(Time* gameTime);
 	void Update(Time* gameTime);
 	void BuildGeometry();
+
+	XMFLOAT3 CalculateCubeCenter(const std::array<Vertex, 8>& vertices);
+
 	thisApp myApp;
 	Shader thisShader;
 	Utils myUtils;

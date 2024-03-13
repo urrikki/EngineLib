@@ -31,6 +31,23 @@ void ShapeApp::Initialize(HWND hWnd)
     //myApp.thisTime.Start();
 }
 
+XMFLOAT3 ShapeApp::CalculateCubeCenter(const std::array<Vertex, 8>& vertices) {
+    XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+    for (const auto& vertex : vertices)
+    {
+        center.x += vertex.Pos.x;
+        center.y += vertex.Pos.y;
+        center.z += vertex.Pos.z;
+    }
+
+    center.x /= vertices.size();
+    center.y /= vertices.size();
+    center.z /= vertices.size();
+
+    return center;
+}
+
 float ShapeApp::AspectRatio()
 {
     return static_cast<float>(myApp.iClientWidth) / myApp.iClientHeight;
@@ -244,6 +261,11 @@ void ShapeApp::BuildGeometry()
 
             SubmeshGeometry submesh = pMesh->createSubmesh(indices);
             pMesh->mBoxGeo->DrawArgs["box"] = submesh;
+
+        Collider* pCollide = listGo[i]->GetComponent<Collider>();
+        if (pCollide) {
+            CalculateCubeCenter(vertices);
+        }
         }
     } 
 }
