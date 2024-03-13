@@ -59,26 +59,14 @@ void ShapeApp::Update(Time* gameTime)
     XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
     XMStoreFloat4x4(&mView, view);
 
-    XMMATRIX world = XMLoadFloat4x4(&mWorld);
-    if (listGo.empty())
-    {
-        XMMATRIX world = XMLoadFloat4x4(&mWorld);
+    for (int h = 0; h < listGo.size(); h++) {
+        listGo[h]->Transform.UpdateWorld();
+        XMMATRIX world = XMLoadFloat4x4(&listGo[h]->Transform.matrix); 
+        XMMATRIX proj = XMLoadFloat4x4(&mProj);
+        XMMATRIX worldViewProj = world * view * proj;
+        XMStoreFloat4x4(&listGo[h]->objConstants.WorldViewProj, XMMatrixTranspose(worldViewProj));
+        listGo[h]->mObjectCB->CopyData(0, listGo[h]->objConstants);
     }
-    else
-    {
-        for (int h = 0; h < listGo.size(); h++) {
-            listGo[h]->Transform.UpdateWorld();
-            XMMATRIX world = XMLoadFloat4x4(&listGo[h]->Transform.matrix); 
-        }
-    }
-    
-    //XMMATRIX world = XMLoadFloat4x4(&mWorld);
-    XMMATRIX proj = XMLoadFloat4x4(&mProj);
-    XMMATRIX worldViewProj = world * view * proj;
-
-    ConstantBufferData objConstants;
-    XMStoreFloat4x4(&objConstants.WorldViewProj, XMMatrixTranspose(worldViewProj));
-    mObjectCB->CopyData(0, objConstants);
     
 }
 
@@ -120,7 +108,7 @@ void ShapeApp::Draw(Time* gameTime) {
             myApp.mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             //myApp.mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
-            myApp.mCommandList->SetGraphicsRootConstantBufferView(0, mObjectCB->Resource()->GetGPUVirtualAddress());
+            myApp.mCommandList->SetGraphicsRootConstantBufferView(0, listGo[h]->mObjectCB->Resource()->GetGPUVirtualAddress());
 
             myApp.mCommandList->DrawIndexedInstanced(
                 pMesh->mBoxGeo->DrawArgs["box"].IndexCount,
@@ -157,7 +145,9 @@ void ShapeApp::BuildDescriptorHeaps()
 
 void ShapeApp::BuildConstantBuffers()
 {
-    mObjectCB = new UploadBuffer<ConstantBufferData>(myApp.md3dDevice, 1, true);
+    for (int h = 0; h < listGo.size(); h++) {
+        listGo[h]->mObjectCB = new UploadBuffer<ConstantBufferData>(myApp.md3dDevice, 1, true);
+    }
 }
 
 void ShapeApp::BuildRootSignature()

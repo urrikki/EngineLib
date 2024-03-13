@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 GameObject::GameObject() {
-	Transform.Identity();
+	Transform.Identity();	
 }
 
 GameObject::~GameObject()

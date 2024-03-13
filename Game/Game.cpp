@@ -34,6 +34,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     GameObject* go = new GameObject;
     go->AddComponent<MeshRenderer>();
     thisShape.listGo.push_back(go);
+   
+    GameObject* go2 = new GameObject;
+    go2->AddComponent<MeshRenderer>();
+    thisShape.listGo.push_back(go2);
+    
 
     // Initialise les chaînes globales
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -51,6 +56,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     thisShape.Initialize(hWnd);
     thisShape.OnResize();
 
+    go->setPos(2.0f, 0.0f, 0.0f);
+    thisShape.listGo[0]->Transform.UpdateWorld();
+
+    go2->setPos(-1.0f, 0.0f, 0.0f);
+    thisShape.listGo[1]->Transform.UpdateWorld();
+
     // Boucle de messages principale :
     while (GetMessage(&msg, nullptr, 0, 0))
     {
@@ -58,9 +69,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         DispatchMessage(&msg);    
 
         thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
-        go->Transform.Rotate(0.01f, 0.04f, -0.02f);
-        thisShape.Update(&thisShape.myApp.thisTime);
+        //go->Transform.Rotate(0.01f, 0.04f, -0.02f);
         //go->Transform.UpdateWorld();
+        thisShape.Update(&thisShape.myApp.thisTime);
         thisShape.Draw(&thisShape.myApp.thisTime);
     }
 

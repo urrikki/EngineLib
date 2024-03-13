@@ -1,11 +1,16 @@
 #pragma once
 #include "pch.h"
-#include "Framework.h"
 #include "Component.h"
 #include "Transform.h"
-#pragma once
+#include "uploadbuffer.h"
 #include "pch.h"
 #include <vector>
+
+
+struct ConstantBufferData
+{
+	XMFLOAT4X4 WorldViewProj;
+};
 
 class GameObject {
 public:
@@ -16,7 +21,9 @@ public:
 	void Update();
 	void setPos(float x , float y , float z);
 
-	std::vector<Component*> tComponentList;
+	vector<Component*> tComponentList;
+	UploadBuffer<ConstantBufferData>* mObjectCB = nullptr;
+	ConstantBufferData objConstants;
 
 	template<typename T>
 	void AddComponent() {

@@ -1,7 +1,6 @@
 #pragma once
 #include "pch.h"
 #include "Initdx.h"
-#include "uploadbuffer.h"
 #include "shader.h"
 #include "mesh.h"
 #include "Utils.h"
@@ -13,11 +12,6 @@ struct Vertex
 {
     XMFLOAT3 Pos;
     XMFLOAT4 Color;
-};
-
-struct ConstantBufferData
-{
-	XMFLOAT4X4 WorldViewProj;
 };
 
 class ShapeApp 
@@ -41,9 +35,6 @@ private :
 
     ID3D12RootSignature* rtRootSignature = nullptr;
     ID3D12DescriptorHeap* mCbvHeap = nullptr;
-
-    UploadBuffer<ConstantBufferData>* mObjectCB = nullptr;
-
 
     ID3D12PipelineState* mPSO = nullptr;
 
