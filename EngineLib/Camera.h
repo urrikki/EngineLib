@@ -13,7 +13,7 @@ public:
 	Camera();
 	virtual ~Camera();
 
-	void update();
+	void update(Input& input);
 
 	void getViewMatrix(Mat& view);
 	void getProjectionMatrix(Mat& proj);

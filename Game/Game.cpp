@@ -5,8 +5,6 @@
 #include "../EngineLib/MenuScene.h"
 #include "../EngineLib/Input.h"
 #include "../EngineLib/Camera.h"
-
-//#include "initdx.h"
 #include "../EngineLib/ShapeApp.h"
 
 #define MAX_LOADSTRING 100
@@ -61,7 +59,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    Camera thisCamera;
+    Input input;
 
     // Boucle de messages principale :
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -69,7 +67,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         TranslateMessage(&msg);
         DispatchMessage(&msg);    
 
-        // Get view and projection matrices
+        thisCamera.update(input);
+
+        // Get view et projection = matrices
         Mat viewMatrix, projectionMatrix;
         thisCamera.getViewMatrix(viewMatrix);
         thisCamera.getProjectionMatrix(projectionMatrix);
