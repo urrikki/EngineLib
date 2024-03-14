@@ -17,7 +17,6 @@ public:
 	GameObject();
 	~GameObject();
 	void Update();
-	void setPos(float x , float y , float z);
 
 	vector<Component*> tComponentList;
 	UploadBuffer<ConstantBufferData>* mObjectCB = nullptr;

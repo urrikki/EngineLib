@@ -59,10 +59,13 @@ private :
     float fPhi = XM_PIDIV4;
     float fRadius = 5.0f;
 
+	vector<Collider*> listCollider;
+
 private :
 
 	float AspectRatio();
-	
+	float watchForCollide();
+
 public:
 
 	void OnResize();
@@ -70,7 +73,7 @@ public:
 	void Update(Time* gameTime);
 	void BuildGeometry();
 
-	XMFLOAT3 CalculateCubeCenter(const std::array<Vertex, 8>& vertices);
+	XMFLOAT3 CalculateCubeCenter(GameObject* go);
 
 	thisApp myApp;
 	Shader thisShader;

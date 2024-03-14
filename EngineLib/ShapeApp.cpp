@@ -28,22 +28,21 @@ void ShapeApp::Initialize(HWND hWnd)
 
     myApp.FlushCommandQueue();
 
-    //myApp.thisTime.Start();
+    for (int j = 0; j < listGo.size(); j++) {
+        Collider* pCollide = listGo[j]->GetComponent<Collider>();
+        if (pCollide)
+        {
+            listCollider.push_back(pCollide);
+        }
+    }
 }
 
-XMFLOAT3 ShapeApp::CalculateCubeCenter(const std::array<Vertex, 8>& vertices) {
+XMFLOAT3 ShapeApp::CalculateCubeCenter(GameObject* go) {
     XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-    for (const auto& vertex : vertices)
-    {
-        center.x += vertex.Pos.x;
-        center.y += vertex.Pos.y;
-        center.z += vertex.Pos.z;
-    }
-
-    center.x /= vertices.size();
-    center.y /= vertices.size();
-    center.z /= vertices.size();
+    center.x = go->Transform.vPos.x / go->Transform.vSca.x;
+    center.y = go->Transform.vPos.y / go->Transform.vSca.y;
+    center.z = go->Transform.vPos.z / go->Transform.vSca.z;
 
     return center;
 }
@@ -63,11 +62,7 @@ void ShapeApp::OnResize()
 
 void ShapeApp::Update(Time* gameTime)
 {
-   
-    //float x = fRadius * sinf(fPhi) * cosf(fTheta);
-    //float z = fRadius * sinf(fPhi) * sinf(fTheta);
-    //float y = fRadius * cosf(fPhi);
-
+  
     XMVECTOR pos = XMVectorSet(0.0f, 2.0f, 10.0f, 1.0f);
     XMVECTOR target = XMVectorZero();
     XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -76,14 +71,27 @@ void ShapeApp::Update(Time* gameTime)
     XMStoreFloat4x4(&mView, view);
 
     for (int h = 0; h < listGo.size(); h++) {
-        //listGo[h]->Transform.UpdateWorld();
+        listGo[h]->Transform.UpdateWorld();
         XMMATRIX world = XMLoadFloat4x4(&listGo[h]->Transform.matrix); 
         XMMATRIX proj = XMLoadFloat4x4(&mProj);
         XMMATRIX worldViewProj = world * view * proj;
         XMStoreFloat4x4(&listGo[h]->objConstants.WorldViewProj, XMMatrixTranspose(worldViewProj));
         listGo[h]->mObjectCB->CopyData(0, listGo[h]->objConstants);
+        Collider* pCollide = listGo[h]->GetComponent<Collider>();
+        if (pCollide) {
+            pCollide->setCenterPos(CalculateCubeCenter(listGo[h]));
+        }
     }
-    
+    if (listCollider.size() >= 2) {
+        for (int j = 0; j < listCollider.size(); j++) {
+            if (j + 1 < listCollider.size()) {
+                for (int f = j + 1; f < listCollider.size(); f++) {
+                    bool Type = listCollider[j]->distanceBetweenCenter(listCollider[f]->center);
+                    listCollider[j]->watchCollideType(Type);
+                }
+            }
+        }
+    }  
 }
 
 void ShapeApp::Draw(Time* gameTime) {
@@ -261,11 +269,6 @@ void ShapeApp::BuildGeometry()
 
             SubmeshGeometry submesh = pMesh->createSubmesh(indices);
             pMesh->mBoxGeo->DrawArgs["box"] = submesh;
-
-        Collider* pCollide = listGo[i]->GetComponent<Collider>();
-        if (pCollide) {
-            CalculateCubeCenter(vertices);
-        }
         }
     } 
 }

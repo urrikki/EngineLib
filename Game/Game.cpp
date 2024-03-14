@@ -38,7 +38,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    
     GameObject* go2 = new GameObject;
     go2->AddComponent<MeshRenderer>();
-    go->AddComponent<Collider>();
+    go2->AddComponent<Collider>();
     thisShape.listGo.push_back(go2);
     
 
@@ -58,14 +58,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     thisShape.Initialize(hWnd);
     thisShape.OnResize();
 
-    go->setPos(2.0f, 0.0f, 0.0f);
+    go->Transform.Translation(2.0f, 0.0f, 0.0f);
+    go->Transform.Scaling(1.0f, 1.0f, 1.0f);
     thisShape.listGo[0]->Transform.UpdateWorld();
 
-    go2->setPos(-1.0f, 0.0f, 0.0f);
+    go2->Transform.Translation(-1.0f, 0.0f, 0.0f);
+    go2->Transform.Scaling(1.0f, 1.0f, 1.0f);
     thisShape.listGo[1]->Transform.UpdateWorld();
 
     thisShape.myApp.thisTime.Start();
-
+    float x = -1.0f;
     bool run = true;
     while( run )
     {
@@ -83,14 +85,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 
         //Puis de notre jeu 
-        //thisShape.myApp.thisTime.Update();
-        thisShape.listGo[0]->Transform.Rotate(0.01f, 0.04f, -0.02f);
-        thisShape.listGo[0]->Transform.UpdateWorld();
-        thisShape.listGo[1]->Transform.Rotate(-0.01f, -0.04f, 0.02f);
-        thisShape.listGo[1]->Transform.UpdateWorld();
+        
+        thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);
+        thisShape.listGo[1]->Transform.Translation(x, -0.04f, 0.02f);
         thisShape.Update(&thisShape.myApp.thisTime);
         thisShape.Draw(&thisShape.myApp.thisTime);
-        thisShape.myApp.CalculateFrame(msg.hwnd, mMainWndCaption);        
+        thisShape.listGo[1]->Transform.SpeedUntilMax(&x, 0.001f, 2.0f);
+              
     }
 
     return (int) msg.wParam;

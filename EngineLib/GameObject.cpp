@@ -16,8 +16,3 @@ void GameObject::Update() {
 	}
 }
 
-void GameObject::setPos(float x , float y, float z) {
-	Transform.Translation(x, y, z);
-	Transform.UpdateWorld();
-}
-

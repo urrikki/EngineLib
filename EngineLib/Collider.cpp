@@ -5,10 +5,6 @@ Collider::Collider() {}
 
 Collider::~Collider() {}
 
-void Collider::Update() {
-
-}
-
 void Collider::setCenterPos(XMFLOAT3 otherCenter) {       
     center.x = otherCenter.x;
     center.y = otherCenter.y;
@@ -16,10 +12,10 @@ void Collider::setCenterPos(XMFLOAT3 otherCenter) {
 }
 
 bool Collider::distanceBetweenCenter(XMFLOAT3 objCenter) {
-    double dx = center.x - objCenter.x;
-    double dy = center.y - objCenter.y;
-    double dz = center.z - objCenter.z;
-    double valDistance = sqrt(dx * dx + dy * dy + dz * dz);
+    float dx = center.x - objCenter.x;
+    float dy = center.y - objCenter.y;
+    float dz = center.z - objCenter.z;
+    float valDistance = sqrt(dx * dx + dy * dy + dz * dz);
 
     if (valDistance <= 0)
     {
@@ -27,4 +23,25 @@ bool Collider::distanceBetweenCenter(XMFLOAT3 objCenter) {
     }
 
     return false;
+}
+
+
+void Collider::watchCollideType(bool newType) {
+    if (newType == false)
+    {
+        if (Collidetype == State::IsColliding) {
+            Collidetype = State::haveCollid;
+        }
+        else {
+            Collidetype = State::NoCollid;
+        }
+    }
+    else if (newType == true) {
+        Collidetype = State::IsColliding;
+    }
+}
+
+State Collider::returnState()
+{
+    return Collidetype;
 }
